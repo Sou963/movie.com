@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function RegisterModal({ onClose }) {
+export default function RegisterPage() {
   const router = useRouter();
 
   const [showPass, setShowPass] = useState(false);
@@ -15,16 +15,6 @@ export default function RegisterModal({ onClose }) {
     password: "",
     confirmPassword: "",
   });
-
-  useEffect(() => {
-    const handler = (e) => e.key === "Escape" && onClose?.();
-
-    window.addEventListener("keydown", handler);
-
-    return () => {
-      window.removeEventListener("keydown", handler);
-    };
-  }, [onClose]);
 
   const handleChange = (e) => {
     setFormData({
@@ -75,7 +65,7 @@ export default function RegisterModal({ onClose }) {
       alert(data.message || "Registration successful!");
 
       if (data.success) {
-        router.push("/pages/login");
+        router.push("/login");
       }
     } catch (error) {
       console.error(error);
@@ -84,14 +74,8 @@ export default function RegisterModal({ onClose }) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
-      onClick={onClose}
-    >
-      <div
-        className="bg-neutral-950 border border-white/10 rounded-2xl p-8 w-full max-w-md"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="min-h-screen flex items-center justify-center bg-black p-4">
+      <div className="bg-neutral-950 border border-white/10 rounded-2xl p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-white mb-2">
           Create Account 🎬
         </h2>

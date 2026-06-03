@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LoginModal({ onClose, switchToRegister }) {
+export default function LoginPage() {
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
 
@@ -12,7 +12,6 @@ export default function LoginModal({ onClose, switchToRegister }) {
     password: "",
   });
 
-  //  FIX: must be inside component
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -57,21 +56,9 @@ export default function LoginModal({ onClose, switchToRegister }) {
     }
   };
 
-  useEffect(() => {
-    const handler = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
-  }, [onClose]);
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
-      onClick={onClose}
-    >
-      <div
-        className="bg-neutral-950 border border-white/10 rounded-2xl p-8 w-full max-w-md"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="min-h-screen flex items-center justify-center bg-black p-4">
+      <div className="bg-neutral-950 border border-white/10 rounded-2xl p-8 w-full max-w-md">
         <h2 className="text-2xl font-bold text-white mb-2">Welcome Back 👋</h2>
 
         <p className="text-white/40 mb-6">Sign in to your account</p>
