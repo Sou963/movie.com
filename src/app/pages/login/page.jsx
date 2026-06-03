@@ -37,7 +37,17 @@ export default function LoginPage() {
         }
       );
 
-      const data = await res.json();
+      // 🔥 SAFE RESPONSE HANDLING (FIX VERCEL ERROR)
+      const text = await res.text();
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.log("Server returned non-JSON:", text);
+        alert("Server error: invalid response");
+        return;
+      }
 
       if (!res.ok) {
         alert(data.message || "Login failed");
@@ -48,7 +58,9 @@ export default function LoginPage() {
 
       if (data.success) {
         localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "/";
+
+        // ✅ FIX: use router instead of window.location
+        router.push("/");
       }
     } catch (error) {
       console.error(error);
