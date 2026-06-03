@@ -1,16 +1,66 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginModal({ onClose, switchToRegister }) {
   const [showPass, setShowPass] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  //  FIX: must be inside component
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleLogin = async () => {
+    if (!formData.email || !formData.password) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        "https://movie-backend-gules.vercel.app/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Login failed");
+        return;
+      }
+
+      alert(data.message || "Login successful!");
+
+      if (data.success) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Server Error: " + error.message);
+    }
+  };
 
   useEffect(() => {
     const handler = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", handler);
-
     return () => window.removeEventListener("keydown", handler);
   }, [onClose]);
 
@@ -30,6 +80,9 @@ export default function LoginModal({ onClose, switchToRegister }) {
         <div className="space-y-4">
           <input
             type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Email"
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white"
           />
@@ -37,6 +90,9 @@ export default function LoginModal({ onClose, switchToRegister }) {
           <div className="relative">
             <input
               type={showPass ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
               placeholder="Password"
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white"
             />
@@ -50,7 +106,10 @@ export default function LoginModal({ onClose, switchToRegister }) {
             </button>
           </div>
 
-          <button className="w-full bg-red-600 hover:bg-red-500 py-3 rounded-xl font-semibold">
+          <button
+            onClick={handleLogin}
+            className="w-full bg-red-600 hover:bg-red-500 py-3 rounded-xl font-semibold"
+          >
             Sign In
           </button>
         </div>
@@ -58,7 +117,7 @@ export default function LoginModal({ onClose, switchToRegister }) {
         <p className="text-center text-white/40 mt-5">
           Don't have an account?{" "}
           <button
-            onClick={() => router.push("/pages/register")}
+            onClick={() => router.push("/register")}
             className="text-red-500"
           >
             Sign Up
